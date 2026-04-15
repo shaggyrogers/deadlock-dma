@@ -1,0 +1,10 @@
+[project]
+name = "deadlock"
+version = "0.1.0"
+description = "DMA cheat for Deadlock"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "memprocfs>=5.17.2",
+    "pygame>=2.6.1",
+]
