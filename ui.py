@@ -33,7 +33,8 @@ class RadarUI:
             self.dead = dead
             self.healthPc = healthPc
 
-            assert 0 <= healthPc <= 1
+            if healthPc is not None:
+                assert 0 <= healthPc <= 1
 
     def __init__(self) -> None:
         # Length of one side of radar square.
@@ -95,7 +96,7 @@ class RadarUI:
         )
 
         for elem in self.elems:
-            self._drawPlayer()
+            self._drawPlayer(playerPos, playerYaw, elem)
 
         pygame.display.flip()
 
@@ -107,7 +108,7 @@ class RadarUI:
         player: RadarElem,
     ) -> None:
         # TODO: Class icons
-        pos = self._convertPosition(playerPos, playerYaw, elem.pos)
+        pos = self._convertPosition(playerPos, playerYaw, player.pos)
 
         if player.dead:
             color = self._deadColor
@@ -137,6 +138,7 @@ class RadarUI:
                 )
 
                 offset += 22
+                assert player.healthPc is None
 
 
 # Testing

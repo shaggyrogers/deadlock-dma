@@ -11,6 +11,7 @@ Modification Date:     2026-04-15
 """
 
 import logging
+from pathlib import Path
 import sys
 from typing import Union
 
@@ -29,7 +30,19 @@ LOG.setLevel("DEBUG")
 
 
 def main() -> int:
-    vmm = memprocfs.Vmm(["-device", "fpga", "-memmap", "physmemmap.txt"])
+    # Check for physmemmap.txt
+    vmmArgs = ["-device", "fpga"]
+
+    if Path("physmemmap.txt").exists():
+        vmmArgs += ["-memmap", "physmemmap.txt"]
+
+    else:
+        LOG.warning(
+            "No physmmemmap.txt found. You may experience issues with an AMD"
+            " CPU or thunderbolt-based DMA card."
+        )
+
+    vmm = memprocfs.Vmm(vmmArgs)
     proc = vmm.process("deadlock.exe")
 
     game = Game(proc)
