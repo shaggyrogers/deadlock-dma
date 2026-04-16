@@ -29,18 +29,21 @@ logging.basicConfig()
 LOG = logging.getLogger()
 LOG.setLevel("DEBUG")
 
+MAP_BG = Path("images/map.png")
 
-def loadHeroIcons(ui: MapUI) -> bool:
-    loadedCount = 0
+
+def loadImages(ui: MapUI) -> None:
+    ui.loadImage(MAP_BG, "map")
+    loadedIconCount = 0
 
     for hero in HeroID:
         path = Path("images/icons") / f"{hero.name.lower()}.png"
 
         if path.exists():
             ui.loadImage(path, hero.name, (32, 32))
-            loadedCount += 1
+            loadedIconCount += 1
 
-    LOG.info(f"Loaded {loadedCount} hero icons")
+    LOG.info(f"Loaded {loadedIconCount} hero icons")
 
 
 def main() -> int:
@@ -64,7 +67,7 @@ def main() -> int:
     pygame.init()
     pygame.freetype.init()
     radar = MapUI(game.map.BottomLeft, game.map.TopRight)
-    loadHeroIcons(radar)
+    loadImages(radar)
 
     def _loop():
         game.update()
@@ -93,6 +96,7 @@ def main() -> int:
                         player.pawn.m_iHealth / player.m_PlayerDataGlobal.m_iHealthMax
                     ),
                     imageName=player.m_PlayerDataGlobal.m_nHeroID.name,
+                    # FIXME: Always 0 for any player other than local
                     yaw=player.pawn.v_angle[1],
                 )
             )

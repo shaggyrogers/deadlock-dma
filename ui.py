@@ -104,23 +104,16 @@ class MapUI:
         """Draw the radar."""
         self._screen.fill(self._bgColor)
 
-        # Outline, axes
-        size = min((self._screen.get_width(), self._screen.get_height()))
-
-        pygame.draw.line(
-            self._screen,
-            self._axisColor,
-            (size / 2, size),
-            (size / 2, 0),
-            self._axisWidth,
-        )
-        pygame.draw.line(
-            self._screen,
-            self._axisColor,
-            (0, size / 2),
-            (size, size / 2),
-            self._axisWidth,
-        )
+        if "map" in self._images:
+            self._screen.blit(
+                self._images["map"],
+                Rect(
+                    0,
+                    0,
+                    self._screen.get_width(),
+                    self._screen.get_height(),
+                ),
+            )
 
         for elem in self.elems:
             self._drawPlayer(elem)
