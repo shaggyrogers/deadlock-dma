@@ -6,7 +6,7 @@ main.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-03-08
-Modification Date:     2026-04-15
+Modification Date:     2026-04-16
 
 """
 
@@ -22,11 +22,25 @@ import pygame.freetype
 from pygame.math import Vector2
 
 from game import Game
-from ui import RadarUI
+from model import HeroID
+from ui import MapUI
 
 logging.basicConfig()
 LOG = logging.getLogger()
 LOG.setLevel("DEBUG")
+
+
+def loadHeroIcons(ui: MapUI) -> bool:
+    loadedCount = 0
+
+    for hero in HeroID:
+        path = Path("images/icons") / f"{hero.name.lower()}.png"
+
+        if path.exists():
+            ui.loadImage(path, hero.name, (32, 32))
+            loadedCount += 1
+
+    LOG.info(f"Loaded {loadedCount} hero icons")
 
 
 def main() -> int:
@@ -49,7 +63,8 @@ def main() -> int:
 
     pygame.init()
     pygame.freetype.init()
-    radar = RadarUI()
+    radar = MapUI(game.map.BottomLeft, game.map.TopRight)
+    loadHeroIcons(radar)
 
     def _loop():
         game.update()
@@ -63,14 +78,10 @@ def main() -> int:
 
         for player in game.playerControllers:
             label = [
-                player.m_iszPlayerName,
-                (
-                    f"{player.m_PlayerDataGlobal.m_nHeroID.name}"
-                    + f" ({player.pawn.m_iHealth/player.m_PlayerDataGlobal.m_iHealthMax:.0%})"
-                ),
+                f"{player.m_iszPlayerName} [{player.pawn.m_iHealth}]",
             ]
             radar.add(
-                RadarUI.RadarElem(
+                MapUI.Element(
                     Vector2(
                         player.pawn.gameSceneNode.m_vecAbsOrigin[0],
                         player.pawn.gameSceneNode.m_vecAbsOrigin[1],
@@ -78,16 +89,15 @@ def main() -> int:
                     player.pawn.m_iTeamNum == localPawn.m_iTeamNum,
                     label=label,
                     dead=(player.pawn.m_iHealth == 0),
+                    healthPc=(
+                        player.pawn.m_iHealth / player.m_PlayerDataGlobal.m_iHealthMax
+                    ),
+                    imageName=player.m_PlayerDataGlobal.m_nHeroID.name,
+                    yaw=player.pawn.v_angle[1],
                 )
             )
 
-        radar.draw(
-            Vector2(
-                localPawn.gameSceneNode.m_vecAbsOrigin[0],
-                localPawn.gameSceneNode.m_vecAbsOrigin[1],
-            ),
-            localPawn.v_angle[1],
-        )
+        radar.draw()
 
         # LOG.debug(
         #     "\n".join(

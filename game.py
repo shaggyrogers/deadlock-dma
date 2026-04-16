@@ -6,7 +6,7 @@ game.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-04-12
-Modification Date:     2026-04-15
+Modification Date:     2026-04-16
 
 """
 
@@ -23,6 +23,11 @@ LOG = logging.getLogger()
 LOG.setLevel("DEBUG")
 
 
+class Map:
+    BottomLeft = (-9597, -10842)
+    TopRight = (9179, 11090)
+
+
 class Game:
 
     def __init__(self, proc: "memprocfs.VmmProcess") -> None:
@@ -33,6 +38,8 @@ class Game:
         self.localPlayerController: CCitadelPlayerController = None
 
         self.playerControllers = []
+
+        self.map = Map
 
     def update(self) -> None:
         try:

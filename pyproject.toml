@@ -6,5 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "memprocfs>=5.17.2",
+    "pillow>=12.2.0",
     "pygame>=2.6.1",
 ]

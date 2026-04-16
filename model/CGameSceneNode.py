@@ -6,7 +6,7 @@ CGameSceneNode.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-04-12
-Modification Date:     2026-04-12
+Modification Date:     2026-04-16
 
 """
 
@@ -16,7 +16,7 @@ import struct
 class CGameSceneNode:
     """Docstring for CGameSceneNode."""
 
-    SIZE = size = 0x140
+    SIZE = 0x140
 
     def __init__(self, data: bytes) -> None:
         """Initialises a CGameSceneNode instance."""

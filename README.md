@@ -13,7 +13,9 @@ You will need:
 
 ## Setup
 
-If you are using an AMD CPU and/or Thunderbolt-based DMA card, generate a `physmemmap.txt` using [the instructions here](https://github.com/ufrisk/LeechCore/wiki/Device_FPGA_AMD_Thunderbolt) and place it in the project root directory.
+If you are using an AMD CPU and/or Thunderbolt-based DMA card, it may be necessary to generate a `physmemmap.txt` using [the instructions here](https://github.com/ufrisk/LeechCore/wiki/Device_FPGA_AMD_Thunderbolt) and place it in the project root directory.
+
+To use [flameblast12's hero icons](https://www.reddit.com/r/DeadlockTheGame/comments/1qln47n/deadlock_dota_styled_pixel_minimap_iconsold_god/) for the minimap, follow instructions in `gen_hero_icons.py`.
 
 # Usage
 
