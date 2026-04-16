@@ -52,12 +52,9 @@ class MapUI:
         self._bottomLeft = Vector2(*bottomLeft)
         self._topRight = Vector2(*topRight)
 
-        self.elems = list()
+        self.elems = []
 
         self._bgColor = "#263238"
-        self._axisColor = "#455A64"
-        self._axisWidth = 4
-
         self._enemyColor = "#d02222"
         self._friendlyColor = "#22d022"
         self._deadColor = "#7c7ca0"
@@ -86,8 +83,8 @@ class MapUI:
 
         self._images[name] = img
 
-    def _convertPosition(self, targetPos: Vector2) -> Vector2:
-        """Convert world position to screen position."""
+    def _convertPosition(self, targetPos: Vector2, reflect: bool) -> Vector2:
+        """Convert world position to screen position, optionally reflecting about x the axis."""
         targetPos = Vector2(
             (targetPos.x - self._bottomLeft.x)
             / (self._topRight.x - self._bottomLeft.x),
@@ -96,36 +93,39 @@ class MapUI:
             / (self._topRight.y - self._bottomLeft.y),
         )
 
+        if reflect:
+            targetPos.y = 1 - targetPos.y
+
         size = Vector2(self._screen.get_width(), self._screen.get_height())
 
         return targetPos * self._screen.get_width()
 
-    def draw(self) -> None:
-        """Draw the radar."""
+    def draw(self, reflect: bool) -> None:
+        """Draw the radar.
+
+        If reflect is True, all player positions are reflected about the x axis.
+        """
+
         self._screen.fill(self._bgColor)
 
-        if "map" in self._images:
-            self._screen.blit(
-                self._images["map"],
-                Rect(
-                    0,
-                    0,
-                    self._screen.get_width(),
-                    self._screen.get_height(),
-                ),
-            )
+        assert "map" in self._images
+        self._screen.blit(
+            self._images["map"],
+            Rect(
+                0,
+                0,
+                self._screen.get_width(),
+                self._screen.get_height(),
+            ),
+        )
 
         for elem in self.elems:
-            self._drawPlayer(elem)
+            self._drawPlayer(elem, reflect)
 
         pygame.display.flip()
 
-    def _drawPlayer(
-        self,
-        player: Element,
-    ) -> None:
-        # TODO: Class icons
-        pos = self._convertPosition(player.pos)
+    def _drawPlayer(self, player: Element, reflect: bool) -> None:
+        pos = self._convertPosition(player.pos, reflect)
 
         if player.dead:
             color = self._deadColor
@@ -138,14 +138,15 @@ class MapUI:
 
         pygame.draw.circle(self._screen, color, pos, 8)
 
-        if player.yaw is not None:
-            # TODO: change to triangle
-            pygame.draw.line(
-                self._screen,
-                color,
-                pos,
-                Vector2(32, 0).rotate(-player.yaw) + pos,
-            )
+        # if player.yaw is not None:
+        #     # TODO: change to triangle or view cone
+        #     pygame.draw.line(
+        #         self._screen,
+        #         color,
+        #         pos,
+        #         # ?
+        #         Vector2(32, 0).rotate(-player.yaw + (0 if reflect else 180)) + pos,
+        #     )
 
         if player.label:
             if isinstance(player.label, str):
@@ -178,15 +179,12 @@ class MapUI:
 
         if player.healthPc is not None:
             if not 0 <= player.healthPc <= 1:
-                # This happen sometimes if max health is updated late.
+                # This happens sometimes if max health is updated late.
                 LOG.warn(
                     f"Player {player.label} with invalid healthPc {player.healthPc}"
                 )
 
                 return
-
-            assert 0 <= player.healthPc <= 1
-            barLen = 38
 
             # Lighter grey bg, bar fade between green and red
             g = int(255 * player.healthPc)
@@ -195,14 +193,12 @@ class MapUI:
             pygame.draw.rect(
                 self._screen,
                 "#999999",
-                Rect(pos.x - 16, pos.y - 16, 6, barLen),
+                Rect(pos.x - 16, pos.y - 16, 6, 38),
                 width=4,
             )
-            hbColor = f"#{r:02X}{g:02X}00"
-
             pygame.draw.rect(
                 self._screen,
-                hbColor,
-                Rect(pos.x - 16, pos.y - 16, 6, int(barLen * player.healthPc)),
+                f"#{r:02X}{g:02X}00",
+                Rect(pos.x - 16, pos.y - 16, 6, int(38 * player.healthPc)),
                 width=4,
             )

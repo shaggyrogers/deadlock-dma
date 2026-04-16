@@ -66,8 +66,8 @@ def main() -> int:
 
     pygame.init()
     pygame.freetype.init()
-    radar = MapUI(game.map.BottomLeft, game.map.TopRight)
-    loadImages(radar)
+    mapUI = MapUI(game.map.BottomLeft, game.map.TopRight)
+    loadImages(mapUI)
 
     def _loop():
         game.update()
@@ -77,13 +77,13 @@ def main() -> int:
 
         localPawn = game.localPlayerController.pawn
 
-        radar.clear()
+        mapUI.clear()
 
         for player in game.playerControllers:
             label = [
                 f"{player.m_iszPlayerName} [{player.pawn.m_iHealth}]",
             ]
-            radar.add(
+            mapUI.add(
                 MapUI.Element(
                     Vector2(
                         player.pawn.gameSceneNode.m_vecAbsOrigin[0],
@@ -101,7 +101,7 @@ def main() -> int:
                 )
             )
 
-        radar.draw()
+        mapUI.draw(reflect=localPawn.m_iTeamNum == 3)
 
         # LOG.debug(
         #     "\n".join(
