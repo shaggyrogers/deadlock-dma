@@ -6,7 +6,7 @@ game.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-04-12
-Modification Date:     2026-04-16
+Modification Date:     2026-04-17
 
 """
 
@@ -14,6 +14,7 @@ import logging
 import struct
 from typing import Union
 
+import construct.core
 import memprocfs
 
 from model import CCitadelPlayerController, CCitadelPlayerPawn, CGameSceneNode
@@ -74,13 +75,18 @@ class Game:
         unsuccessful.
         """
         try:
-            controller = CCitadelPlayerController(
+            controller = CCitadelPlayerController.parse(
                 self._process.memory.read(
-                    controller, CCitadelPlayerController.SIZE, memprocfs.FLAG_NOCACHE
+                    controller,
+                    CCitadelPlayerController.sizeof(),
+                    memprocfs.FLAG_NOCACHE,
                 )
             )
 
         except ValueError:
+            return None
+
+        except construct.core.StringError:
             return None
 
         if not controller.m_hPawn:
@@ -91,19 +97,19 @@ class Game:
         if not pPawn:
             return None
 
-        controller.pawn = CCitadelPlayerPawn(
+        controller.pawn = CCitadelPlayerPawn.parse(
             self._process.memory.read(
-                pPawn, CCitadelPlayerPawn.SIZE, memprocfs.FLAG_NOCACHE
+                pPawn, CCitadelPlayerPawn.sizeof(), memprocfs.FLAG_NOCACHE
             )
         )
 
         if not controller.pawn.m_pGameSceneNode:
             return None
 
-        controller.pawn.gameSceneNode = CGameSceneNode(
+        controller.pawn.gameSceneNode = CGameSceneNode.parse(
             self._process.memory.read(
                 controller.pawn.m_pGameSceneNode,
-                CGameSceneNode.SIZE,
+                CGameSceneNode.sizeof(),
                 memprocfs.FLAG_NOCACHE,
             )
         )

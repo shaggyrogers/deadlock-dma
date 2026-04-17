@@ -6,7 +6,7 @@ ui.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-03-19
-Modification Date:     2026-04-16
+Modification Date:     2026-04-17
 
 """
 
@@ -138,6 +138,7 @@ class MapUI:
 
         pygame.draw.circle(self._screen, color, pos, 8)
 
+        # FIXME: Yaw only set for local player
         # if player.yaw is not None:
         #     # TODO: change to triangle or view cone
         #     pygame.draw.line(

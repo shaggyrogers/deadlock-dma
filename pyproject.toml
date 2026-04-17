@@ -5,6 +5,7 @@ description = "DMA cheat for Deadlock"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "construct>=2.10.70",
     "memprocfs>=5.17.2",
     "pillow>=12.2.0",
     "pygame>=2.6.1",
