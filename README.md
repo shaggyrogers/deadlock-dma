@@ -7,7 +7,7 @@ DMA cheat for Deadlock. WIP, currently provides radar only.
 You will need:
 
 * DMA card supported by PCILeech
-* Python 3.12 (3.7+ will probably work)
+* Python 3.12+
   - uv
 * Slave PC and master laptop to run the game and cheat respectively
 

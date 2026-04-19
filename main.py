@@ -6,7 +6,7 @@ main.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-03-08
-Modification Date:     2026-04-16
+Modification Date:     2026-04-19
 
 """
 
@@ -29,7 +29,7 @@ logging.basicConfig()
 LOG = logging.getLogger()
 LOG.setLevel("DEBUG")
 
-MAP_BG = Path("images/map.png")
+MAP_BG = Path("images/minimap_mid_psd_7034a849.png")
 
 
 def loadImages(ui: MapUI) -> None:
@@ -70,9 +70,7 @@ def main() -> int:
     loadImages(mapUI)
 
     def _loop():
-        game.update()
-
-        if not game.localPlayerController:
+        if not game.update() or not game.localPlayerController:
             return
 
         localPawn = game.localPlayerController.pawn
@@ -94,6 +92,8 @@ def main() -> int:
                     dead=(player.pawn.m_iHealth == 0),
                     healthPc=(
                         player.pawn.m_iHealth / player.m_PlayerDataGlobal.m_iHealthMax
+                        if player.m_PlayerDataGlobal.m_iHealthMax
+                        else None
                     ),
                     imageName=player.m_PlayerDataGlobal.m_nHeroID.name,
                     # FIXME: Always 0 for any player other than local

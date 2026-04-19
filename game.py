@@ -6,12 +6,13 @@ game.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-04-12
-Modification Date:     2026-04-17
+Modification Date:     2026-04-19
 
 """
 
 import logging
 import struct
+import time
 from typing import Union
 
 import construct.core
@@ -33,33 +34,38 @@ class Game:
 
     def __init__(self, proc: "memprocfs.VmmProcess") -> None:
         self._process = proc
+
         self._dwEntityList = self._getDwEntityList()
         self._dwLocalPlayer = self._getDwLocalPlayer()
 
         self.localPlayerController: CCitadelPlayerController = None
-
         self.playerControllers = []
+
+        self._lastValidLocalPlayerTime = float("-inf")
 
         self.map = Map
 
     def update(self) -> None:
-        try:
-            self._updateLocalPlayer()
-            self._updatePlayers()
-
-        except (struct.error, ValueError, TypeError):
-            LOG.exception("Failed to update game model")
-
-    def _updateLocalPlayer(self) -> None:
         self.localPlayerController = self._getController(self._dwLocalPlayer)
+        self._updatePlayers()
+
+        # If we haven't been able to get a valid local CCitadelPlayerController in
+        # a while, update offsets
+        if self.localPlayerController:
+            self._lastValidLocalPlayerTime = time.monotonic()
+
+        if time.monotonic() - self._lastValidLocalPlayerTime > 5:
+            self._dwEntityList = self._getDwEntityList()
+            self._dwLocalPlayer = self._getDwLocalPlayer()
+            self._lastValidLocalPlayerTime = time.monotonic()
+
+        return True
 
     def _updatePlayers(self) -> None:
         result = []
 
         for i in range(64):
-            ent = self._getEntity(i)
-
-            if not ent:
+            if not (ent := self._getEntity(i)):
                 continue
 
             # FIXME: Properly check for CCitadelPlayerController?
@@ -83,10 +89,7 @@ class Game:
                 )
             )
 
-        except ValueError:
-            return None
-
-        except construct.core.StringError:
+        except (ValueError, construct.core.StringError, construct.core.StreamError):
             return None
 
         if not controller.m_hPawn:

@@ -6,7 +6,7 @@ ui.py
 Description:           TODO
 Author:                Michael De Pasquale
 Creation Date:         2026-03-19
-Modification Date:     2026-04-17
+Modification Date:     2026-04-19
 
 """
 
@@ -84,7 +84,7 @@ class MapUI:
         self._images[name] = img
 
     def _convertPosition(self, targetPos: Vector2, reflect: bool) -> Vector2:
-        """Convert world position to screen position, optionally reflecting about x the axis."""
+        """Convert world position to screen position."""
         targetPos = Vector2(
             (targetPos.x - self._bottomLeft.x)
             / (self._topRight.x - self._bottomLeft.x),
@@ -95,6 +95,7 @@ class MapUI:
 
         if reflect:
             targetPos.y = 1 - targetPos.y
+            targetPos.x = 1 - targetPos.x
 
         size = Vector2(self._screen.get_width(), self._screen.get_height())
 
@@ -103,7 +104,7 @@ class MapUI:
     def draw(self, reflect: bool) -> None:
         """Draw the radar.
 
-        If reflect is True, all player positions are reflected about the x axis.
+        If reflect is True, all player positions are mirrored.
         """
 
         self._screen.fill(self._bgColor)
